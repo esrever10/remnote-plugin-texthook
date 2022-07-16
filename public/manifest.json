@@ -1,8 +1,8 @@
 {
   "manifestVersion": 1,
-  "id": "plugin_template",
-  "name": "Plugin Template",
-  "author": "remnote",
+  "id": "esrever10_texthook",
+  "name": "TextHook",
+  "author": "esrever10",
   "repoUrl": "",
   "version": {
     "major": 0,
@@ -10,11 +10,11 @@
     "patch": 1
   },
   "description": "",
-  "requestNative": false,
+  "requestNative": true,
   "requiredScopes": [
     {
       "type": "All",
-      "level": "ReadCreateModify"
+      "level": "ReadCreateModifyDelete"
     }
   ]
 }

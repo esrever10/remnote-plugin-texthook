@@ -1,42 +1,38 @@
-import { declareIndexPlugin, ReactRNPlugin, WidgetLocation } from '@remnote/plugin-sdk';
+import { 
+  declareIndexPlugin, 
+  ReactRNPlugin, 
+  AppEvents, 
+  RichTextInterface, 
+  useTracker
+} from '@remnote/plugin-sdk';
+import { log } from '../lib/logging';
 import '../style.css';
 import '../App.css';
 
 async function onActivate(plugin: ReactRNPlugin) {
-  // Register settings
   await plugin.settings.registerStringSetting({
-    id: 'name',
-    title: 'What is your Name?',
-    defaultValue: 'Bob',
+    id: "rule",
+    title: "Rule",
+    defaultValue: "》》::>>,》》》::>>>,：：::\:\:,：：：::\:\:\:,；；::;;,；；；::;;;,《《::<<,！！::!!,￥￥::$$,-》::->",
   });
 
-  await plugin.settings.registerBooleanSetting({
-    id: 'pizza',
-    title: 'Do you like pizza?',
-    defaultValue: true,
-  });
+  // const rule = useTracker(
+  //   async (reactivePlugin) =>
+  //     await reactivePlugin.settings.getSetting("rule")
+  // ) as string;
 
-  await plugin.settings.registerNumberSetting({
-    id: 'favorite-number',
-    title: 'What is your favorite number?',
-    defaultValue: 42,
-  });
-
-  // A command that inserts text into the editor if focused.
-  await plugin.app.registerCommand({
-    id: 'editor-command',
-    name: 'Editor Command',
-    action: async () => {
-      plugin.editor.insertPlainText('Hello World!');
-    },
-  });
-
-  // Show a toast notification to the user.
-  await plugin.app.toast("I'm a toast!");
-
-  // Register a sidebar widget.
-  await plugin.app.registerWidget('sample_widget', WidgetLocation.RightSidebar, {
-    dimensions: { height: 'auto', width: '100%' },
+  plugin.event.addListener(AppEvents.EditorTextEdited, undefined, async (newText: RichTextInterface) => {
+    const inputText = await plugin.richText.toString(newText);
+    log(plugin, inputText);
+    
+    const widgetCtx = await plugin.widget.getWidgetContext();
+    const dimension = await plugin.widget.getDimensions(widgetCtx["widgetInstanceId"]);
+    log(plugin, JSON.stringify(widgetCtx));
+    log(plugin, JSON.stringify(dimension));
+    if (inputText == "》》") {
+      await plugin.editor.deleteCharacters(2, -1);
+      await plugin.editor.insertMarkdown(">>");
+    }
   });
 }
 
