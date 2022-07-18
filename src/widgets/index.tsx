@@ -31,7 +31,7 @@ async function onActivate(plugin: ReactRNPlugin) {
     const inputText = await plugin.richText.toString(newText);
     const text = inputText.trimEnd();
 
-    log(plugin, "text:"+text);
+    // log(plugin, "text:"+text);
 
     const ruleCustom = String(
       await plugin.settings.getSetting("rule_custom")
@@ -87,29 +87,29 @@ async function onActivate(plugin: ReactRNPlugin) {
       do {
         let preBlackList: string[] = await plugin.storage.getSession("blackList");
         if (preBlackList != undefined && preBlackList.includes(text)) {
-          log(plugin, JSON.stringify(preBlackList));
+          // log(plugin, JSON.stringify(preBlackList));
           break;
         }
-        log(plugin, "--start--");
+        // log(plugin, "--start--");
         var index = text.length - 1;
         const rightToken = getToken(text, index, chinesePattern);
         if (rightToken.length == 0) {
           break;
         }
   
-        log(plugin, "rightToken:"+rightToken+",index="+index);
+        // log(plugin, "rightToken:"+rightToken+",index="+index);
         index -= rightToken.length;
         const englishToken = getToken(text, index, englishPattern);
         if (englishToken.length == 0) {
           break;
         }
-        log(plugin, "englishToken:"+englishToken+",index="+index);
+        // log(plugin, "englishToken:"+englishToken+",index="+index);
         index -= englishToken.length;
         const leftToken = getToken(text, index, chinesePattern);
         if (leftToken.length == 0) {
           break;
         }
-        log(plugin, "leftToken:"+leftToken+",index="+index);
+        // log(plugin, "leftToken:"+leftToken+",index="+index);
   
         var base = text.substring(0, index + 1);
         log(plugin, `base:${base}`);
@@ -124,7 +124,7 @@ async function onActivate(plugin: ReactRNPlugin) {
   
         const delNum = rightToken.length + englishToken.length;
         const addStr = " " + englishToken + " " + rightToken;
-        log(plugin, "wow:"+delNum+", "+addStr);
+        // log(plugin, "wow:"+delNum+", "+addStr);
         await plugin.editor.deleteCharacters(delNum, -1);
         await plugin.editor.insertMarkdown(addStr);
         // await plugin.storage.setSession("blackList", []);
