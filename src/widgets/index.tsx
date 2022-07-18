@@ -3,8 +3,6 @@ import {
   ReactRNPlugin, 
   AppEvents, 
   RichTextInterface, 
-  useTracker,
-  useAPIEventListener
 } from '@remnote/plugin-sdk';
 import { log } from '../lib/logging';
 import '../style.css';
@@ -33,7 +31,7 @@ async function onActivate(plugin: ReactRNPlugin) {
     const inputText = await plugin.richText.toString(newText);
     const text = inputText.trimEnd();
 
-    // log(plugin, "text:"+text);
+    log(plugin, "text:"+text);
 
     const ruleCustom = String(
       await plugin.settings.getSetting("rule_custom")
@@ -43,7 +41,7 @@ async function onActivate(plugin: ReactRNPlugin) {
       const rules = ruleCustom.split(",");
       for (const rule of rules) {
         const [src, dst] = rule.split("::");
-        log(plugin, `${text}, ${src}, ${text.includes(src)}`);
+        // log(plugin, `${text}, ${src}, ${text.includes(src)}`);
         if (text.includes(src, text.length - src.length)) {
           await plugin.editor.deleteCharacters(src.length, -1);
           await plugin.editor.insertMarkdown(dst);
@@ -99,21 +97,22 @@ async function onActivate(plugin: ReactRNPlugin) {
           break;
         }
   
-        // log(plugin, "rightToken:"+rightToken+",index="+index);
+        log(plugin, "rightToken:"+rightToken+",index="+index);
         index -= rightToken.length;
         const englishToken = getToken(text, index, englishPattern);
         if (englishToken.length == 0) {
           break;
         }
-        // log(plugin, "englishToken:"+englishToken+",index="+index);
+        log(plugin, "englishToken:"+englishToken+",index="+index);
         index -= englishToken.length;
         const leftToken = getToken(text, index, chinesePattern);
         if (leftToken.length == 0) {
           break;
         }
-        // log(plugin, "leftToken:"+leftToken+",index="+index);
+        log(plugin, "leftToken:"+leftToken+",index="+index);
   
-        var base = text.substring(0, leftToken.length);
+        var base = text.substring(0, index + 1);
+        log(plugin, `base:${base}`);
         let blackList: string[] = [];
         blackList.push(base);
         for (let item of englishToken + rightToken) {
@@ -128,7 +127,7 @@ async function onActivate(plugin: ReactRNPlugin) {
         log(plugin, "wow:"+delNum+", "+addStr);
         await plugin.editor.deleteCharacters(delNum, -1);
         await plugin.editor.insertMarkdown(addStr);
-        await plugin.storage.setSession("blackList", []);
+        // await plugin.storage.setSession("blackList", []);
         break;
       } while(1);
     }
