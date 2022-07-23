@@ -23,8 +23,9 @@ async function onActivate(plugin: ReactRNPlugin) {
 
   await plugin.settings.registerStringSetting({
     id: "rule_custom",
-    title: "Custom rule of text hook. (e.g. btw::By the way, AH::At home)",
+    title: "Custom rule of text hook. (e.g. btw::By the way, AH::At home, one rule one line)",
     defaultValue: "",
+    multiline: true,
   });
 
   plugin.event.addListener(AppEvents.EditorTextEdited, undefined, async (newText: RichTextInterface) => {
@@ -33,12 +34,11 @@ async function onActivate(plugin: ReactRNPlugin) {
 
     // log(plugin, "text:"+text);
 
-    const ruleCustom = String(
+    const rules = String(
       await plugin.settings.getSetting("rule_custom")
     );
-
-    if (ruleCustom.length > 0) {
-      const rules = ruleCustom.split(",");
+    log(plugin, rules)
+    if (rules.length > 0) {
       for (const rule of rules) {
         const [src, dst] = rule.split("::");
         // log(plugin, `${text}, ${src}, ${text.includes(src)}`);
