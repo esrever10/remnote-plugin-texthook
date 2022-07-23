@@ -34,11 +34,12 @@ async function onActivate(plugin: ReactRNPlugin) {
 
     // log(plugin, "text:"+text);
 
-    const rules = String(
+    const ruleCustom = String(
       await plugin.settings.getSetting("rule_custom")
     );
-    log(plugin, rules)
-    if (rules.length > 0) {
+
+    if (ruleCustom.length > 0) {
+      const rules = ruleCustom.split("\n");
       for (const rule of rules) {
         const [src, dst] = rule.split("::");
         // log(plugin, `${text}, ${src}, ${text.includes(src)}`);
