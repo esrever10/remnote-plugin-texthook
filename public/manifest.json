@@ -7,7 +7,7 @@
   "version": {
     "major": 0,
     "minor": 0,
-    "patch": 1
+    "patch": 2
   },
   "description": "Automatically replace some text input with user's custom rule. For Chinese users, add spaces between Chinese and English with Command",
   "requestNative": false,
