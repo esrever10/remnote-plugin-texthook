@@ -9,7 +9,7 @@
     "minor": 0,
     "patch": 1
   },
-  "description": "Automatically replace some text input with user's custom rule. For Chinese users, automatically add spaces between Chinese and English",
+  "description": "Automatically replace some text input with user's custom rule. For Chinese users, add spaces between Chinese and English with Command",
   "requestNative": false,
   "requiredScopes": [
     {
