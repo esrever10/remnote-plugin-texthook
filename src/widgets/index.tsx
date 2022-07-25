@@ -80,6 +80,12 @@ function addSpaces(tokens: [string, string][]) {
   return res;
 }
 
+function process(unspacedText: string) {
+  const tokens = parse(unspacedText);
+  const spacedText = addSpaces(tokens)!;
+  return spacedText;
+}  
+
 async function onActivate(plugin: ReactRNPlugin) {
   await plugin.settings.registerBooleanSetting({
     id: "rule_>>",
@@ -108,10 +114,11 @@ async function onActivate(plugin: ReactRNPlugin) {
       const remId = await plugin.focus.getFocusedRemId();
       const rem = await plugin.rem.findOne(remId);
       const text = await plugin.richText.toMarkdown(rem?.text!);
+      // log(plugin, "tokens: " + JSON.stringify(parse(text)));
       const {anchor, focus} = await plugin.editor.getSelection();
-      log(plugin, `anchor: ${anchor}, focus: ${focus}`)
-      await plugin.storage.setSession("unspacedText", text.slice(0, anchor));
+      log(plugin, `text: ${text}, length: ${text.length}, anchor: ${anchor}, focus: ${focus}`)
       await plugin.editor.deleteCharacters(anchor);
+      await plugin.editor.insertMarkdown(process(text.slice(0, anchor)));
     },
   });
   
@@ -149,31 +156,6 @@ async function onActivate(plugin: ReactRNPlugin) {
         await plugin.editor.insertMarkdown("<<");
       }
     }  
-
-    const {anchor, focus} = await plugin.editor.getSelection();
-    log(plugin, `anchor: ${anchor}, focus: ${focus}`)
-    // For add space
-    const unspacedText:string = await plugin.storage.getSession("unspacedText");
-
-    function process(unspacedText: string) {
-      const tokens = parse(unspacedText);
-      log(plugin, "tokens: " + JSON.stringify(tokens));
-      const spacedText = addSpaces(tokens)!;
-      log(plugin, "spacedText: " + spacedText);
-      return spacedText;
-    }  
-    log(plugin, "unspacedText: " + unspacedText);
-    if (unspacedText) {
-      var text = await plugin.richText.toMarkdown(newText);
-      log(plugin, "text:" + text);
-      if (text == "") {
-        await plugin.editor.insertMarkdown(process(unspacedText));
-        await plugin.storage.setSession("unspacedText", null);
-      } else if (unspacedText.endsWith(text)) {
-        await plugin.editor.insertMarkdown(process(unspacedText.slice(0, unspacedText.length - text.length)));
-        await plugin.storage.setSession("unspacedText", null);
-      }
-    }
   });
 }
 
