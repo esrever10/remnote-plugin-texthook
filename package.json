@@ -9,7 +9,7 @@
     "build": "cross-env NODE_ENV=production webpack --color --progress && cd dist && zip -r ../PluginZip.zip ./*"
   },
   "dependencies": {
-    "@remnote/plugin-sdk": "^0.0.5",
+    "@remnote/plugin-sdk": "^0.0.9",
     "react": "^17.0.2",
     "react-dom": "^17.0.2"
   },

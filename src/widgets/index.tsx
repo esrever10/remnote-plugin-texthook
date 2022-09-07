@@ -2,7 +2,10 @@ import {
   declareIndexPlugin, 
   ReactRNPlugin, 
   AppEvents, 
-  RichTextInterface, 
+  RichTextInterface,
+  RichTextAnnotationInterface,
+  RichTextElementTextInterface,
+  RichTextElementInterface, 
 } from '@remnote/plugin-sdk';
 import { log } from '../lib/logging';
 import '../style.css';
@@ -84,18 +87,36 @@ function process(unspacedText: string) {
   const tokens = parse(unspacedText);
   const spacedText = addSpaces(tokens)!;
   return spacedText;
-}  
+}
+
+function richText2log(text: RichTextInterface) {
+  const values = Array.from(text.values());
+  return values.map((item) => {
+    switch(item.i) {
+      case undefined:
+        return item;
+      case 's':
+        return `(s, ${item.delimiterCharacterForSerialization})`
+      case 'm':
+      case 'n':
+      case 'x':
+        return `(${item.i}, ${item.text})`
+      default:
+        return `(${item.i},)`
+    }
+  }).join(' | ');
+}
 
 async function onActivate(plugin: ReactRNPlugin) {
   await plugin.settings.registerBooleanSetting({
-    id: "rule_>>",
-    title: "Chinese character conversion：》》to >> and《《 to <<",
+    id: "rule_ce_space",
+    title: "Auto add a space between Chinese and English",
     defaultValue: true,
   });
 
   await plugin.settings.registerBooleanSetting({
-    id: "rule_space",
-    title: "Auto add a space between Chinese and English",
+    id: "rule_latex_space",
+    title: "Auto put space on both sides of the latex block.",
     defaultValue: true,
   });
 
@@ -111,18 +132,48 @@ async function onActivate(plugin: ReactRNPlugin) {
     name: `Add spaces`,
     keyboardShortcut: `ctrl+1`,
     action: async () => {
-      const remId = await plugin.focus.getFocusedRemId();
-      const rem = await plugin.rem.findOne(remId);
-      const text = await plugin.richText.toMarkdown(rem?.text!);
-      // log(plugin, "tokens: " + JSON.stringify(parse(text)));
-      const {anchor, focus} = await plugin.editor.getSelection();
-      log(plugin, `text: ${text}, length: ${text.length}, anchor: ${anchor}, focus: ${focus}`)
-      await plugin.editor.deleteCharacters(anchor);
-      await plugin.editor.insertMarkdown(process(text.slice(0, anchor)));
-    },
+      const ruleCEspace = Boolean(
+        await plugin.settings.getSetting("rule_ce_space")
+      );
+      if (!ruleCEspace) {
+        return;
+      }
+
+      const rem = await plugin.focus.getFocusedRem();
+      addSpaces4Richtext(plugin, rem?.text!);
+    }
   });
-  
+
+  async function addSpaces4Richtext(plugin: ReactRNPlugin, newText: RichTextInterface) {
+    var items = Array.from(newText.values());
+    var spaceCount = 0;
+    const newItems = items.map(item => {
+      if (!["m", "n", undefined].includes(item?.i)) {
+        return item as RichTextElementInterface
+      }
+      var text = "";
+      if (item?.i === undefined) {
+        text = item as string;
+        const spacedText = process(text);
+        spaceCount += spacedText.length - text.length;
+        return spacedText as RichTextElementInterface
+      } else {
+        text = (item as RichTextElementTextInterface | RichTextAnnotationInterface).text;
+        const spacedText = process(text);
+        spaceCount += spacedText.length - text.length;
+        (item as RichTextElementTextInterface | RichTextAnnotationInterface).text = spacedText;
+        return (item as RichTextElementInterface);
+      }
+    });
+    await plugin.editor.setText(newItems);
+    await plugin.editor.moveCaret(spaceCount, 1);
+  }
+
   plugin.event.addListener(AppEvents.EditorTextEdited, undefined, async (newText: RichTextInterface) => {
+    if (!newText) {
+      return;
+    }
+    log(plugin, `newText: ${richText2log(newText)}`); 
     // For custom rule
     const ruleCustom = String(
       await plugin.settings.getSetting("rule_custom")
@@ -141,21 +192,23 @@ async function onActivate(plugin: ReactRNPlugin) {
       }
     }
 
-    // For Chinese 》》
-    const rule1 = Boolean(
-      await plugin.settings.getSetting("rule_>>")
+    // For latex space rule
+    const ruleLatexspace = Boolean(
+      await plugin.settings.getSetting("rule_latex_space")
     );
-    if (rule1) {
-      var text = await plugin.richText.toString(newText);
-      text = text.trimEnd();
-      if (text.charAt(text.length - 1) == '》' && text.charAt(text.length - 2) == '》') {
-        await plugin.editor.deleteCharacters(2, -1);
-        await plugin.editor.insertMarkdown(">>");
-      } else if (text.charAt(text.length - 1) == '《' && text.charAt(text.length - 2) == '《') {
-        await plugin.editor.deleteCharacters(2, -1);
-        await plugin.editor.insertMarkdown("<<");
+    if (ruleLatexspace) {
+      var items = Array.from(newText.values());
+      if (items.length >= 3 && items.at(-1) === ' ' && items.at(-2)?.i === 'x' && items.at(-3)?.i === undefined && !(items.at(-3) as string).endsWith(" ")) {
+        items.splice(-3, 1, items.at(-3) + " ");
+        await plugin.editor.setText(items);
+      } 
+      items = Array.from(newText.values());
+      if (items.length >= 2 && items.at(-1)?.i === undefined && !(items.at(-1) as string).startsWith(" ")) {
+        items.splice(-1, 1, " " + items.at(-1));
+        await plugin.editor.setText(items);
+        await plugin.editor.moveCaret(1, 1);
       }
-    }  
+    }
   });
 }
 
