@@ -10,7 +10,7 @@
     "patch": 2
   },
   "enableOnMobile": false,
-  "description": "Automatically replace some text input with user's custom rule. For Chinese users, add spaces between Chinese and English with Command",
+  "description": "Automatically replace some text input with user's custom rule. Automatically add space on both sides of the latex block. For Chinese users, add spaces between Chinese and English with Command",
   "requestNative": false,
   "requiredScopes": [
     {
