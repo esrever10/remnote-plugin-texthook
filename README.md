@@ -14,6 +14,6 @@
 
 - Latex Math Autocomplete
 - Support Chinese character conversion, Like ""》》to >>"" "；；to ;;", "：：to ::", "￥￥ to $$". 
-  For the present, you can check my autohotkey script![](https://github.com/esrever10/auto-remnote)
+  For the present, you can check my autohotkey script [auto-remnote](https://github.com/esrever10/auto-remnote)
 
 
