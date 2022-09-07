@@ -6,7 +6,7 @@
     ![](/images/custom.gif)
 - Automatically add space on both sides of the latex block.
     ![](/images/latex.gif)
-- Automatically add spaces between Chinese and English.
+- Ctrl+1 to add spaces between Chinese and English.
     ![](/images/space.gif)
 
 

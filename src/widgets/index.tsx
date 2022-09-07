@@ -110,7 +110,7 @@ function richText2log(text: RichTextInterface) {
 async function onActivate(plugin: ReactRNPlugin) {
   await plugin.settings.registerBooleanSetting({
     id: "rule_ce_space",
-    title: "Auto add a space between Chinese and English",
+    title: "ctrl+1 to add a space between Chinese and English",
     defaultValue: true,
   });
 
