@@ -230,30 +230,6 @@ async function onActivate(plugin: ReactRNPlugin) {
         }
       }
     }
-  });
-
-  plugin.event.addListener(AppEvents.EditorTextEdited, undefined, async (newText: RichTextInterface) => {
-    if (!newText) {
-      return;
-    }
-    log(plugin, `newText: ${richText2log(newText)}`); 
-    // For custom rule
-    const ruleCustom = String(
-      await plugin.settings.getSetting("rule_custom")
-    );
-    if (ruleCustom.length > 0) {
-      var text = await plugin.richText.toMarkdown(newText);
-      const rules = ruleCustom.split("\n");
-      for (const rule of rules) {
-        const [src, dst] = rule.split("::");
-        // log(plugin, `${text}, ${src}, ${text.includes(src)}`);
-        if (text.includes(src, text.length - src.length)) {
-          await plugin.editor.deleteCharacters(src.length, -1);
-          await plugin.editor.insertMarkdown(dst);
-          break;
-        }
-      }
-    }
 
     // For latex space rule
     const ruleLatexspace = Boolean(

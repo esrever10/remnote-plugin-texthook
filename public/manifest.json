@@ -7,7 +7,7 @@
   "version": {
     "major": 0,
     "minor": 0,
-    "patch": 5
+    "patch": 6
   },
   "enableOnMobile": false,
   "description": "Automatically replace some text input with user's custom rule. Automatically add space on both sides of the latex block. For Chinese users, add spaces between Chinese and English with Command",
