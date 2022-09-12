@@ -2,7 +2,7 @@
 
 ## Features
 
-- Automatically replace some text input with user's custom rule. (e.g. btw::By the way, AH::At home).
+- Automatically replace some text input with user's custom rule. (e.g. btw::By the way, AH::At home, one rule one line).
     ![](https://raw.githubusercontent.com/esrever10/remnote-plugin-texthook/main/images/custom.gif)
 - Automatically add space on both sides of the latex block.
     ![](https://raw.githubusercontent.com/esrever10/remnote-plugin-texthook/main/images/latex.gif)
