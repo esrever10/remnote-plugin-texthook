@@ -28,4 +28,5 @@
 
 - http://paypal.me/esrever10
 - https://afdian.net/a/esrever10
-- ![](https://raw.githubusercontent.com/esrever10/remnote-plugin-texthook/main/images/weixin.jpg)
+- Weixin Donate：
+![](https://raw.githubusercontent.com/esrever10/remnote-plugin-texthook/main/images/weixin.jpg)
