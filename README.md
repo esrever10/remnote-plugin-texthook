@@ -24,3 +24,8 @@
 
 > There is a strong community here that can solve non-Latin language problems, so hurry up and join qq group：853031358
 
+## Donate
+
+- http://paypal.me/esrever10
+- https://afdian.net/a/esrever10
+- ![](https://raw.githubusercontent.com/esrever10/remnote-plugin-texthook/main/images/weixin.gif)
