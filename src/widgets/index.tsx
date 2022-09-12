@@ -203,7 +203,7 @@ async function onActivate(plugin: ReactRNPlugin) {
         await plugin.editor.setText(items);
       } 
       items = Array.from(newText.values());
-      if (items.length >= 2 && items.at(-1)?.i === undefined && !(items.at(-1) as string).startsWith(" ")) {
+      if (items.length >= 2 && items.at(-1)?.i === undefined && items.at(-2)?.i === 'x' && !(items.at(-1) as string).startsWith(" ")) {
         items.splice(-1, 1, " " + items.at(-1));
         await plugin.editor.setText(items);
         await plugin.editor.moveCaret(1, 1);
