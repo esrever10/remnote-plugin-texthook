@@ -107,11 +107,62 @@ function richText2log(text: RichTextInterface) {
   }).join(' | ');
 }
 
+async function addSpaces4Richtext(plugin: ReactRNPlugin, newText: RichTextInterface) {
+  var items = Array.from(newText.values());
+  var spaceCount = 0;
+  const newItems = items.map(item => {
+    if (!["m", "n", undefined].includes(item?.i)) {
+      return item as RichTextElementInterface
+    }
+    var text = "";
+    if (item?.i === undefined) {
+      text = item as string;
+      const spacedText = process(text);
+      spaceCount += spacedText.length - text.length;
+      return spacedText as RichTextElementInterface
+    } else {
+      text = (item as RichTextElementTextInterface | RichTextAnnotationInterface).text;
+      const spacedText = process(text);
+      spaceCount += spacedText.length - text.length;
+      (item as RichTextElementTextInterface | RichTextAnnotationInterface).text = spacedText;
+      return (item as RichTextElementInterface);
+    }
+  });
+  await plugin.editor.setText(newItems);
+  await plugin.editor.moveCaret(spaceCount, 1);
+}
+
+async function registerCECommand(plugin: ReactRNPlugin, shortcut: string) {
+  await plugin.app.registerCommand({
+    id: `addspaces`,
+    name: `Add spaces`,
+    keyboardShortcut: shortcut,
+    action: async () => {
+      const ruleCEspace = Boolean(
+        await plugin.settings.getSetting("rule_ce_space")
+      );
+      if (!ruleCEspace) {
+        return;
+      }
+
+      const rem = await plugin.focus.getFocusedRem();
+      addSpaces4Richtext(plugin, rem?.text!);
+    }
+  });
+}
+
 async function onActivate(plugin: ReactRNPlugin) {
+
   await plugin.settings.registerBooleanSetting({
     id: "rule_ce_space",
-    title: "ctrl+1 to add a space between Chinese and English",
+    title: "Ctrl+shift+1 to add a space between Chinese and English",
     defaultValue: true,
+  });
+
+  await plugin.settings.registerStringSetting({
+    id: "shortcut",
+    title: "Replace shortcut key to add a space between Chinese and English?",
+    defaultValue: "ctrl+shift+1",
   });
 
   await plugin.settings.registerBooleanSetting({
@@ -123,14 +174,17 @@ async function onActivate(plugin: ReactRNPlugin) {
   await plugin.settings.registerStringSetting({
     id: "rule_custom",
     title: "Custom rule of text hook. (e.g. btw::By the way, AH::At home, one rule one line)",
-    defaultValue: "",
+    defaultValue: "btw::By the way\nAH::At home",
     multiline: true,
   });
 
+  const shortcut = String(
+    await plugin.settings.getSetting("shortcut")
+  );
   await plugin.app.registerCommand({
     id: `addspaces`,
     name: `Add spaces`,
-    keyboardShortcut: `ctrl+1`,
+    keyboardShortcut: shortcut,
     action: async () => {
       const ruleCEspace = Boolean(
         await plugin.settings.getSetting("rule_ce_space")
@@ -144,30 +198,39 @@ async function onActivate(plugin: ReactRNPlugin) {
     }
   });
 
-  async function addSpaces4Richtext(plugin: ReactRNPlugin, newText: RichTextInterface) {
-    var items = Array.from(newText.values());
-    var spaceCount = 0;
-    const newItems = items.map(item => {
-      if (!["m", "n", undefined].includes(item?.i)) {
-        return item as RichTextElementInterface
+  registerCECommand(plugin, shortcut);
+
+  plugin.event.addListener(
+    AppEvents.SettingChanged,
+    "shortcut",
+    ({ value }) => {
+      registerCECommand(plugin, value);
+    }
+  );
+
+  plugin.event.addListener(AppEvents.EditorTextEdited, undefined, async (newText: RichTextInterface) => {
+    if (!newText) {
+      return;
+    }
+    log(plugin, `newText: ${richText2log(newText)}`); 
+    // For custom rule
+    const ruleCustom = String(
+      await plugin.settings.getSetting("rule_custom")
+    );
+    if (ruleCustom.length > 0) {
+      var text = await plugin.richText.toMarkdown(newText);
+      const rules = ruleCustom.split("\n");
+      for (const rule of rules) {
+        const [src, dst] = rule.split("::");
+        // log(plugin, `${text}, ${src}, ${text.includes(src)}`);
+        if (text.includes(src, text.length - src.length)) {
+          await plugin.editor.deleteCharacters(src.length, -1);
+          await plugin.editor.insertMarkdown(dst);
+          break;
+        }
       }
-      var text = "";
-      if (item?.i === undefined) {
-        text = item as string;
-        const spacedText = process(text);
-        spaceCount += spacedText.length - text.length;
-        return spacedText as RichTextElementInterface
-      } else {
-        text = (item as RichTextElementTextInterface | RichTextAnnotationInterface).text;
-        const spacedText = process(text);
-        spaceCount += spacedText.length - text.length;
-        (item as RichTextElementTextInterface | RichTextAnnotationInterface).text = spacedText;
-        return (item as RichTextElementInterface);
-      }
-    });
-    await plugin.editor.setText(newItems);
-    await plugin.editor.moveCaret(spaceCount, 1);
-  }
+    }
+  });
 
   plugin.event.addListener(AppEvents.EditorTextEdited, undefined, async (newText: RichTextInterface) => {
     if (!newText) {
