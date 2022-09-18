@@ -223,7 +223,7 @@ async function onActivate(plugin: ReactRNPlugin) {
       for (const rule of rules) {
         const [src, dst] = rule.split("::");
         // log(plugin, `${text}, ${src}, ${text.includes(src)}`);
-        if (src === dst) {
+        if (src.trim() === dst.trim()) {
           continue;
         }
         if (text.includes(src, text.length - src.length)) {
