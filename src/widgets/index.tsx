@@ -223,6 +223,9 @@ async function onActivate(plugin: ReactRNPlugin) {
       for (const rule of rules) {
         const [src, dst] = rule.split("::");
         // log(plugin, `${text}, ${src}, ${text.includes(src)}`);
+        if (src === dst) {
+          continue;
+        }
         if (text.includes(src, text.length - src.length)) {
           await plugin.editor.deleteCharacters(src.length, -1);
           await plugin.editor.insertMarkdown(dst);
