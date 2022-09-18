@@ -6,13 +6,13 @@
   "repoUrl": "https://github.com/esrever10/remnote-plugin-texthook",
   "version": {
     "major": 0,
-    "minor": 0,
-    "patch": 9
+    "minor": 1,
+    "patch": 0
   },
   "minimumRemNoteVersion": {
     "major": 0,
-    "minor": 0,
-    "patch": 9
+    "minor": 1,
+    "patch": 0
   },
   "enableOnMobile": false,
   "description": "Automatically replace some text input with user's custom rule. Automatically add space on both sides of the latex block. For Chinese users, add spaces between Chinese and English with Command",
