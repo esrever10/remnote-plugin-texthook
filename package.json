@@ -6,7 +6,7 @@
   "scripts": {
     "check-types": "tsc",
     "dev": "cross-env NODE_ENV=development webpack-dev-server --color --progress --no-open",
-    "build": "cross-env NODE_ENV=production webpack --color --progress && cd dist && zip -r ../PluginZip.zip ./*"
+    "build": "shx rm -rf dist && cross-env NODE_ENV=production webpack --color --progress && shx cp README.md dist && cd dist && bestzip ../PluginZip.zip ./*"
   },
   "dependencies": {
     "@remnote/plugin-sdk": "^0.0.9",
@@ -35,6 +35,8 @@
     "webpack": "^5.73.0",
     "webpack-cli": "^4.10.0",
     "webpack-dev-server": "^4.9.3",
-    "utf8": "^3.0.0"
+    "utf8": "^3.0.0",
+    "shx": "^0.3.4",
+    "bestzip": "^2.2.1"
   }
 }
