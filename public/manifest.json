@@ -7,12 +7,12 @@
   "version": {
     "major": 0,
     "minor": 1,
-    "patch": 0
+    "patch": 1
   },
   "minimumRemNoteVersion": {
     "major": 0,
     "minor": 1,
-    "patch": 0
+    "patch": 1
   },
   "enableOnMobile": false,
   "description": "Automatically replace some text input with user's custom rule. Automatically add space on both sides of the latex block. For Chinese users, add spaces between Chinese and English with Command",

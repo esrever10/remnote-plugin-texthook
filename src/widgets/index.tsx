@@ -219,6 +219,7 @@ async function onActivate(plugin: ReactRNPlugin) {
     );
     if (ruleCustom.length > 0) {
       var text = await plugin.richText.toMarkdown(newText);
+      text = text.trim();
       const rules = ruleCustom.split("\n");
       for (const rule of rules) {
         const [src, dst] = rule.split("::");
